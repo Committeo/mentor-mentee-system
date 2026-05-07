@@ -1,0 +1,311 @@
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body{
+        background-color:#f5f5fa;
+        color:#333;
+        line-height:1.6;
+    }
+    .container{
+        display: flex;
+        flex-direction:column;
+        min-height:100vh;
+    }
+    header
+    {
+    background-color: #2c3e50;
+    color:white;
+    padding:1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+    }
+    header h2{
+        font-size:1.5rem;
+        display: flex;
+        align-items: center;
+        gap:0.5rem;
+    }
+    .header-controls{
+        display:flex;
+        align-items:center;
+        gap: 1rem;
+    }
+    .search-container{
+        display: flex;
+        align-items: center;
+
+    }
+    #search-input{
+        padding:0.5rem 1rem;
+        border: 1px solid #ddd;
+        border-radius:4px 0 0 4px;
+        outline: none;
+        width: 250px;
+    }
+    .btn{
+    padding: 0.5rem 1rem;
+    border:none;
+    border-radius:4px;
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap:0.5rem;
+    transition: all 0.3s ease;
+    }
+    .btn-primary
+    {
+        background-color: #3498db;
+        color: white;
+    }
+    .btn-primary:hover{
+        background-color: #2980b9;
+        color: white;
+    }
+    .btn-secondary{
+        background-color: #95a5a6;
+        color:white;
+    }
+    .btn-secondary:hover{
+        background-color: #7f8c8d;
+        color: white;
+
+    }
+    .btn-danger{
+        background-color: #e74c3c;
+        color: white;
+    }
+    .btn-danger:hover{
+        background-color: #c0392b;
+        color: white;
+    }
+    .btn-search{
+        background-color: #3498db;
+        color: white;
+        border-radius:0 4px 4px 0;
+        padding:0.5rem 1rem;
+    }
+    .btn-search:hover
+    {
+        background-color: #2980b9;
+    }
+    .btn-search{
+        background-color: #3498db;
+        color: white;
+        border-radius:0 4px 4px 0;
+        padding:0.5rem 1rem;
+    }
+    .btn-search:hover
+    {
+        background-color: #2980b9;
+    }
+   /* .content{
+        display:flex;
+        flex: 1;
+    }*/
+    
+
+    /* ✅ SIDEBAR FIX */
+    .sidebar{
+        width: 250px;
+        background-color:#34495e;
+        color: white;
+
+        display: flex;
+        flex-direction: column; /* IMPORTANT */
+    }
+
+    /* NAV takes full height */
+    .sidebar nav{
+        flex: 1;
+    }
+
+    /* UL full height */
+    .sidebar nav ul{
+        list-style:none;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    /* MENU ITEMS */
+    .sidebar nav ul li{
+        padding: 0.75rem 1.5rem;
+        cursor:pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    /* HOVER FIX */
+    .sidebar nav ul li:hover{
+        background-color: #2c3e50;
+    }
+
+    /* ACTIVE */
+    .sidebar nav ul li.active{
+        background-color: #1abc9c;
+    }
+
+    /* 🔴 LOGOUT AT BOTTOM */
+    .sidebar nav ul li.logout{
+        margin-top: auto;
+        color: #e74c3c;
+    }
+
+    .sidebar nav ul li.logout:hover{
+        background-color: #e74c3c;
+        color: white;
+    }
+    /*main content styling*/
+   .table-container {
+    flex: 1;              /* takes available space */
+    overflow: auto;
+}   
+    section{
+        display: none;
+    }
+    .section.active{
+    display: block;
+
+    }
+    .section-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    #section-action {
+        display: flex;
+        gap:0.5rem;
+    }
+    .dashboard-cards{
+        display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+    }
+    .card{
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow:0 2px 4px rgba(0,0,0,0.05);
+        text-align:center;
+        position: relative;
+        overflow: hidden;
+        color: white;
+    }
+    .card h3{
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    .card p{
+        font-size: 1.75rem;
+        font-weight:bold ;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+
+    }
+    .card-icon{
+        position: absolute;
+        right: 1rem;
+        bottom: 1rem;
+        font-size: 2.5rem;
+        opacity: 0.3;
+        z-index: 0;
+    }
+    .card-blue{
+        background-color: #3498db;
+    }
+    .card-green{
+        background-color: #2ecc71;
+    }
+    .card-orange{
+        background-color: #e67e22;
+    }
+    .card-yellow{
+        background-color: #fff44f;
+    }
+    .card-purple{
+        background-color: #9b59b6;
+    }
+    .card-red{
+        background-color: #e74c3c;
+    }
+    .recent-activity{
+        background-color: white;
+        border-radius: 8px ;
+        padding:1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .recent-activity h3{
+        margin-bottom: 1rem;
+        color: #2c3e50;
+    }
+    #activity-list{
+        list-style: none;
+
+    }
+    #activity-list li{
+        padding: 0.75rem;
+        border-bottom: 1px solid #eee;
+        display:flex;
+        align-items: center;
+        gap:0.75rem;
+    }
+    #activity-list li:last-child {
+    border-bottom:none;
+    }
+    /*table style*/
+    .table-container{
+        overflow: auto;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    table{
+        width:100%;
+        border-collapse: collapse;
+        background-color: white;
+    }
+    th,
+    td{
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom:1px solid #eee;
+    }
+    th{
+        background-color: #3498db;
+        color: white;
+        font-weight: 500;
+    }
+    tr:hover{
+        background-color: #f5f7fa;
+    }
+    .status-badge{
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    .status.active{
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    margin-top: auto;   /* 🔥 pushes it below table properly */
+}

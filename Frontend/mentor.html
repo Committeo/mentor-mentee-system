@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard</title>
+    <link rel="stylesheet" href="css/Admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h2><i class="fas fa-chalkboard-teacher"></i> Mentor-Mentee System</h2>
+        <div class="header-controls">
+            <span id="welcome-text" style="color:#1abc9c; font-weight:600;"></span>
+            <!-- Profile corner button injected here by profile.js -->
+        </div>
+    </header>
+
+    <div class="content">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</li>
+                    <li data-section="mentees"><i class="fas fa-user-graduate"></i> My Mentees</li>
+                    <li data-section="tasks"><i class="fas fa-tasks"></i> Assign Tasks</li>
+                    <li data-section="meetings">
+                        <i class="fas fa-video"></i> Google Meet
+                        <span id="mentor-meet-badge" style="display:none; background:#1a73e8; color:#fff; border-radius:50%; padding:1px 6px; font-size:0.75rem; margin-left:4px;"></span>
+                    </li>
+                    <li data-section="messenger">
+                        <i class="fas fa-comments"></i> Messenger
+                        <span id="mentor-unread-badge" style="display:none; background:#e74c3c; color:#fff; border-radius:50%; padding:1px 6px; font-size:0.75rem; margin-left:4px;"></span>
+                    </li>
+                    <li data-section="logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <!-- DASHBOARD -->
+            <section id="dashboard-section" class="section active">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                <div class="dashboard-cards">
+                    <div class="card card-blue"><h3>My Mentees</h3><p id="d-mentees">0</p><i class="fas fa-user-graduate card-icon"></i></div>
+                    <div class="card card-green"><h3>Total Tasks</h3><p id="d-tasks">0</p><i class="fas fa-tasks card-icon"></i></div>
+                    <div class="card card-orange"><h3>Pending Tasks</h3><p id="d-pending">0</p><i class="fas fa-clock card-icon"></i></div>
+                </div>
+                <div class="recent-activity">
+                    <h3>My Mentees Overview</h3>
+                    <table>
+                        <thead><tr><th>Name</th><th>Dept</th><th>Total</th><th>Done</th><th>Performance</th></tr></thead>
+                        <tbody id="mentees-overview"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- MENTEES -->
+            <section id="mentees-section" class="section">
+                <h2><i class="fas fa-user-graduate"></i> My Mentees</h2>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Department</th></tr></thead>
+                        <tbody id="mentees-table"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TASKS -->
+            <section id="tasks-section" class="section">
+                <h2><i class="fas fa-tasks"></i> Assign Tasks</h2>
+                <div class="assign-box">
+                    <select id="task-mentee-select"><option value="">-- Select Mentee --</option></select>
+                    <input type="text" id="task-title" placeholder="Task title">
+                    <input type="date" id="task-deadline">
+                    <button class="btn btn-primary" onclick="assignTask()"><i class="fas fa-plus"></i> Assign Task</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>ID</th><th>Title</th><th>Mentee ID</th><th>Status</th><th>Deadline</th></tr></thead>
+                        <tbody id="tasks-table"></tbody>
+                    </table>
+                </div>
+            </section>
+
+
+            <!-- GOOGLE MEET -->
+            <section id="meetings-section" class="section">
+                <h2><i class="fas fa-video" style="color:#1a73e8;"></i> Google Meet Sessions</h2>
+                <div class="assign-box" style="background:#f0f7ff; border:1.5px solid #1a73e8; border-radius:10px; padding:1.2rem; margin-bottom:1.5rem;">
+                    <h3 style="margin-bottom:1rem; color:#1a73e8; font-size:1rem;"><i class="fas fa-plus-circle"></i> Schedule New Meeting</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem;">
+                        <input type="text" id="meet-title" placeholder="Meeting title (e.g. Week 3 Review)" style="padding:0.5rem 0.75rem; border:1px solid #ccc; border-radius:6px;">
+                        <select id="meet-mentee-select" style="padding:0.5rem 0.75rem; border:1px solid #ccc; border-radius:6px;"><option value="">-- Select Mentee --</option></select>
+                        <input type="datetime-local" id="meet-datetime" style="padding:0.5rem 0.75rem; border:1px solid #ccc; border-radius:6px;">
+                        <input type="number" id="meet-duration" placeholder="Duration (min)" value="60" min="15" max="480" style="padding:0.5rem 0.75rem; border:1px solid #ccc; border-radius:6px;">
+                    </div>
+                    <input type="url" id="meet-link" placeholder="Google Meet link (e.g. https://meet.google.com/abc-defg-hij)" style="width:100%; padding:0.5rem 0.75rem; border:1px solid #ccc; border-radius:6px; margin-bottom:0.75rem; box-sizing:border-box;">
+                    <textarea id="meet-notes" placeholder="Optional agenda / notes for the mentee..." rows="2" style="width:100%; padding:0.5rem 0.75rem; border:1px solid #ccc; border-radius:6px; margin-bottom:0.75rem; box-sizing:border-box; resize:vertical;"></textarea>
+                    <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap;">
+                        <button class="btn btn-primary" onclick="scheduleMeeting()" style="background:#1a73e8; border-color:#1a73e8;"><i class="fas fa-calendar-plus"></i> Schedule Meeting</button>
+                        <a href="https://meet.google.com/new" target="_blank" style="font-size:0.85rem; color:#1a73e8; text-decoration:none;"><i class="fas fa-external-link-alt"></i> Create new Google Meet link</a>
+                    </div>
+                    <div id="meet-msg" style="margin-top:0.75rem; font-size:0.9rem;"></div>
+                </div>
+                <h3 style="margin-bottom:0.75rem; font-size:1rem;"><i class="fas fa-calendar-alt"></i> My Scheduled Meetings</h3>
+                <div id="meetings-list" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+            </section>
+
+            <!-- MESSENGER -->
+            <section id="messenger-section" class="section">
+                <h2><i class="fas fa-comments"></i> Messenger</h2>
+                <div class="messenger-container">
+                    <div class="contact-list">
+                        <h3><i class="fas fa-users"></i> Contacts</h3>
+                        <div id="contact-list-items"></div>
+                    </div>
+                    <div class="chat-area">
+                        <div id="no-chat-selected" class="no-chat-selected">
+                            <i class="fas fa-comment-dots" style="font-size:3rem; color:#ddd;"></i>
+                            <span>Select a contact to start chatting</span>
+                        </div>
+                        <div id="chat-content" style="display:none; flex-direction:column; height:100%;">
+                            <div class="chat-header">
+                                <div class="contact-avatar" id="chat-avatar" style="width:36px;height:36px;font-size:1rem;"></div>
+                                <div>
+                                    <div id="chat-header-name" style="font-weight:600;"></div>
+                                    <div id="chat-header-role" style="font-size:0.8rem; opacity:0.8;"></div>
+                                </div>
+                            </div>
+                            <div class="chat-messages" id="chat-messages"></div>
+                            <div class="chat-input-area">
+                                <input type="text" id="msg-input" placeholder="Type a message...">
+                                <button class="btn-send" onclick="Messenger.sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script src="js/messenger.js"></script>
+<script src="js/profile.js"></script>
+<script>
+const API = "http://127.0.0.1:8000";
+let currentUser = JSON.parse(localStorage.getItem("user") || "null");
+
+if (!currentUser || currentUser.role !== "mentor") window.location.href = "login.html";
+
+document.getElementById("welcome-text").textContent = "Welcome, " + (currentUser?.name || "Mentor");
+
+document.querySelectorAll(".sidebar ul li").forEach(item => {
+    item.addEventListener("click", () => {
+        document.querySelectorAll(".sidebar ul li").forEach(i => i.classList.remove("active"));
+        document.querySelectorAll("main section").forEach(s => s.classList.remove("active"));
+        item.classList.add("active");
+        const sec = item.getAttribute("data-section");
+        if (sec === "logout") { localStorage.clear(); window.location.href = "login.html"; return; }
+        const target = document.getElementById(sec + "-section");
+        if (target) target.classList.add("active");
+        if (sec === "mentees")   loadMentees();
+        if (sec === "tasks")     { loadMentees(); loadTasks(); }
+        if (sec === "messenger") Messenger.loadContacts();
+        if (sec === "meetings")  { loadMentees(); loadMeetings(); }
+        if (sec === "dashboard") loadDashboard();
+    });
+});
+
+async function loadDashboard() {
+    const res  = await fetch(`${API}/mentor/dashboard/${currentUser.id}`);
+    const data = await res.json();
+    document.getElementById("d-mentees").textContent = data.total_mentees || 0;
+    const tasks = await fetch(`${API}/mentor/tasks/${currentUser.id}`);
+    const taskData = await tasks.json();
+    document.getElementById("d-tasks").textContent   = taskData.length;
+    document.getElementById("d-pending").textContent = taskData.filter(t => t.status === "pending").length;
+    const tbody = document.getElementById("mentees-overview");
+    tbody.innerHTML = "";
+    (data.mentees || []).forEach(m => {
+        tbody.innerHTML += `<tr>
+            <td>${m.name}</td><td>${m.dep||""}</td>
+            <td>${m.total_tasks}</td><td>${m.completed_tasks}</td>
+            <td><span style="color:${m.performance>=70?'#27ae60':'#e74c3c'}">${m.performance}%</span></td>
+        </tr>`;
+    });
+}
+
+async function loadMentees() {
+    const res  = await fetch(`${API}/mentor/mentees/${currentUser.id}`);
+    const data = await res.json();
+    const tbody = document.getElementById("mentees-table");
+    if (tbody) {
+        tbody.innerHTML = "";
+        data.forEach(m => {
+            tbody.innerHTML += `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.email}</td><td>${m.dep||""}</td></tr>`;
+        });
+    }
+    const sel = document.getElementById("task-mentee-select");
+    if (sel) {
+        sel.innerHTML = '<option value="">-- Select Mentee --</option>';
+        data.forEach(m => sel.innerHTML += `<option value="${m.id}">${m.name}</option>`);
+    }
+    const meetSel = document.getElementById("meet-mentee-select");
+    if (meetSel) {
+        meetSel.innerHTML = '<option value="">-- Select Mentee --</option>';
+        data.forEach(m => meetSel.innerHTML += `<option value="${m.id}">${m.name}</option>`);
+    }
+}
+
+async function loadTasks() {
+    const res  = await fetch(`${API}/mentor/tasks/${currentUser.id}`);
+    const data = await res.json();
+    const tbody = document.getElementById("tasks-table");
+    tbody.innerHTML = "";
+    data.forEach(t => {
+        tbody.innerHTML += `<tr>
+            <td>${t.id}</td><td>${t.title}</td><td>${t.mentee_id}</td>
+            <td><span class="status-badge" style="background:${t.status==='completed'?'#d4edda':'#fff3cd'};color:${t.status==='completed'?'#155724':'#856404'}">${t.status}</span></td>
+            <td>${t.deadline ? t.deadline.split(" ")[0] : "-"}</td>
+        </tr>`;
+    });
+}
+
+async function assignTask() {
+    const menteeId = document.getElementById("task-mentee-select").value;
+    const title    = document.getElementById("task-title").value.trim();
+    const deadline = document.getElementById("task-deadline").value;
+    if (!menteeId || !title) { alert("Select mentee and enter task title"); return; }
+    await fetch(`${API}/mentor/task/add`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({mentee_id: parseInt(menteeId), title, deadline: deadline || null})
+    });
+    document.getElementById("task-title").value    = "";
+    document.getElementById("task-deadline").value = "";
+    loadTasks();
+}
+
+
+// =========================
+// GOOGLE MEET FUNCTIONS
+// =========================
+async function loadMeetings() {
+    const res  = await fetch(`${API}/meetings/user/${currentUser.id}`);
+    const data = await res.json();
+    const list = document.getElementById("meetings-list");
+    if (!list) return;
+    if (!data.length) {
+        list.innerHTML = `<div style="text-align:center;padding:2rem;color:#aaa;"><i class="fas fa-calendar-times" style="font-size:2rem;"></i><p style="margin-top:0.5rem;">No meetings scheduled yet.</p></div>`;
+        return;
+    }
+    list.innerHTML = "";
+    const now = new Date();
+    data.forEach(m => {
+        const dt = new Date(m.scheduled_at);
+        const isPast = dt < now;
+        const isCancelled = m.status === "cancelled";
+        const statusColor = { scheduled:"#1a73e8", completed:"#27ae60", cancelled:"#e74c3c" }[m.status] || "#999";
+        const statusBg    = { scheduled:"#e8f0fe", completed:"#d4edda", cancelled:"#fdecea" }[m.status] || "#f5f5f5";
+        list.innerHTML += `
+        <div style="background:#fff; border:1px solid #e0e0e0; border-left:4px solid ${statusColor}; border-radius:8px; padding:1rem 1.2rem; display:flex; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;">
+                <div style="font-weight:600; font-size:0.95rem; margin-bottom:0.3rem;">${m.title}</div>
+                <div style="font-size:0.82rem; color:#555; margin-bottom:0.25rem;"><i class="fas fa-user-graduate"></i> Mentee: <strong>${m.mentee_name}</strong></div>
+                <div style="font-size:0.82rem; color:#555; margin-bottom:0.25rem;"><i class="fas fa-clock"></i> ${dt.toLocaleString()} &nbsp;|&nbsp; ${m.duration_minutes} min</div>
+                ${m.notes ? `<div style="font-size:0.8rem; color:#777; margin-top:0.25rem;"><i class="fas fa-sticky-note"></i> ${m.notes}</div>` : ""}
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem; min-width:160px;">
+                <span style="background:${statusBg}; color:${statusColor}; padding:3px 10px; border-radius:20px; font-size:0.78rem; font-weight:600; text-transform:capitalize;">${m.status}</span>
+                ${!isCancelled ? `<a href="${m.meet_link}" target="_blank" class="btn btn-primary" style="font-size:0.8rem; padding:0.3rem 0.8rem; background:#1a73e8; border-color:#1a73e8; text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem;"><i class="fas fa-video"></i> Join Meet</a>` : ""}
+                ${m.status === "scheduled" ? `<button onclick="updateMeetStatus(${m.id},'completed')" class="btn" style="font-size:0.78rem; padding:0.25rem 0.7rem; color:#27ae60; border-color:#27ae60;"><i class="fas fa-check"></i> Mark Done</button>` : ""}
+                ${m.status === "scheduled" ? `<button onclick="updateMeetStatus(${m.id},'cancelled')" class="btn" style="font-size:0.78rem; padding:0.25rem 0.7rem; color:#e74c3c; border-color:#e74c3c;"><i class="fas fa-times"></i> Cancel</button>` : ""}
+                ${isCancelled ? `<button onclick="deleteMeeting(${m.id})" class="btn" style="font-size:0.78rem; padding:0.25rem 0.7rem; color:#888; border-color:#ccc;"><i class="fas fa-trash"></i> Delete</button>` : ""}
+            </div>
+        </div>`;
+    });
+
+    // Update badge
+    const upcoming = data.filter(m => m.status === "scheduled" && new Date(m.scheduled_at) >= now).length;
+    const badge = document.getElementById("mentor-meet-badge");
+    if (badge) {
+        badge.textContent = upcoming;
+        badge.style.display = upcoming > 0 ? "inline" : "none";
+    }
+}
+
+async function scheduleMeeting() {
+    const menteeId  = document.getElementById("meet-mentee-select").value;
+    const title     = document.getElementById("meet-title").value.trim() || "Mentor-Mentee Session";
+    const link      = document.getElementById("meet-link").value.trim();
+    const dt        = document.getElementById("meet-datetime").value;
+    const duration  = parseInt(document.getElementById("meet-duration").value) || 60;
+    const notes     = document.getElementById("meet-notes").value.trim();
+    const msg       = document.getElementById("meet-msg");
+
+    if (!menteeId) { msg.innerHTML = `<span style="color:#e74c3c;">Please select a mentee.</span>`; return; }
+    if (!link)     { msg.innerHTML = `<span style="color:#e74c3c;">Please enter a Google Meet link.</span>`; return; }
+    if (!dt)       { msg.innerHTML = `<span style="color:#e74c3c;">Please select date and time.</span>`; return; }
+
+    msg.innerHTML = `<span style="color:#888;"><i class="fas fa-spinner fa-spin"></i> Scheduling...</span>`;
+
+    const res  = await fetch(`${API}/meetings/schedule`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            mentor_id: currentUser.id,
+            mentee_id: parseInt(menteeId),
+            title, meet_link: link,
+            scheduled_at: new Date(dt).toISOString().slice(0, 19),
+            duration_minutes: duration, notes
+        })
+    });
+    const data = await res.json();
+    if (data.success) {
+        msg.innerHTML = `<span style="color:#27ae60;"><i class="fas fa-check-circle"></i> Meeting scheduled! The mentee can now see it in their dashboard.</span>`;
+        document.getElementById("meet-title").value = "";
+        document.getElementById("meet-link").value  = "";
+        document.getElementById("meet-datetime").value = "";
+        document.getElementById("meet-notes").value = "";
+        loadMeetings();
+    } else {
+        msg.innerHTML = `<span style="color:#e74c3c;"><i class="fas fa-exclamation-circle"></i> ${data.detail || "Failed to schedule meeting."}</span>`;
+    }
+}
+
+async function updateMeetStatus(id, status) {
+    await fetch(`${API}/meetings/status/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+    });
+    loadMeetings();
+}
+
+async function deleteMeeting(id) {
+    if (!confirm("Delete this meeting?")) return;
+    await fetch(`${API}/meetings/${id}`, { method: "DELETE" });
+    loadMeetings();
+}
+
+// Init
+loadDashboard();
+Messenger.init(currentUser);
+Profile.init(currentUser);
+
+setInterval(async () => {
+    const res  = await fetch(`${API}/messages/unread/${currentUser.id}`);
+    const data = await res.json();
+    const badge = document.getElementById("mentor-unread-badge");
+    if (data.unread > 0) { badge.textContent = data.unread; badge.style.display = "inline"; }
+    else badge.style.display = "none";
+}, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mentor Mentee System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,sans-serif; }
+        body { display:flex; justify-content:center; align-items:center; min-height:100vh; background:linear-gradient(135deg,#2c3e50,#3498db); }
+        .login-box { background:#fff; padding:2.5rem; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.2); width:380px; }
+        .login-box h2 { text-align:center; margin-bottom:1.5rem; color:#2c3e50; font-size:1.4rem; }
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; margin-bottom:0.3rem; font-weight:500; color:#555; font-size:0.9rem; }
+        .form-group input { width:100%; padding:0.65rem 1rem; border:1.5px solid #ddd; border-radius:8px; outline:none; font-size:0.95rem; transition:border 0.2s; }
+        .form-group input:focus { border-color:#3498db; }
+        .btn-login { width:100%; padding:0.75rem; background:linear-gradient(135deg,#1abc9c,#3498db); color:white; border:none; border-radius:8px; font-size:1rem; cursor:pointer; margin-top:0.5rem; font-weight:600; transition:opacity 0.2s; }
+        .btn-login:hover { opacity:0.9; }
+        .btn-otp { width:100%; padding:0.65rem; background:#f0f0f0; color:#555; border:none; border-radius:8px; font-size:0.9rem; cursor:pointer; margin-top:0.5rem; transition:background 0.2s; }
+        .btn-otp:hover { background:#e0e0e0; }
+        .msg { text-align:center; margin-top:0.75rem; font-size:0.9rem; }
+        .msg a { color:#3498db; text-decoration:none; }
+        #error-msg { text-align:center; margin-top:0.5rem; font-size:0.9rem; padding:0.5rem; border-radius:6px; display:none; }
+        #error-msg.error { background:#fdecea; color:#e74c3c; }
+        #error-msg.success { background:#eafaf1; color:#27ae60; }
+        .divider { text-align:center; color:#aaa; font-size:0.85rem; margin:0.75rem 0; }
+        #otp-section { display:none; margin-top:0.5rem; }
+        .back-link { text-align:center; margin-top:0.5rem; font-size:0.85rem; color:#3498db; cursor:pointer; }
+        .back-link:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <h2><i class="fas fa-users" style="color:#3498db;"></i><br>Mentor-Mentee Login</h2>
+
+    <!-- Normal login -->
+    <div id="login-section">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="Enter your email">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter your password">
+        </div>
+        <button class="btn-login" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
+        <div class="divider">— or —</div>
+        <button class="btn-otp" onclick="showOtpRequest()"><i class="fas fa-envelope"></i> Login with OTP</button>
+    </div>
+
+    <!-- OTP request -->
+    <div id="otp-section">
+        <div class="form-group">
+            <label>Registered Email</label>
+            <input type="email" id="otp-email" placeholder="Enter your registered email">
+        </div>
+        <button class="btn-login" onclick="requestOtp()" id="send-otp-btn"><i class="fas fa-paper-plane"></i> Send OTP</button>
+
+        <div id="otp-verify-part" style="display:none; margin-top:1rem;">
+            <div class="form-group">
+                <label>Enter OTP</label>
+                <input type="text" id="otp-code" placeholder="6-digit OTP" maxlength="6">
+            </div>
+            <button class="btn-login" onclick="verifyOtp()"><i class="fas fa-check-circle"></i> Verify & Login</button>
+        </div>
+        <div class="back-link" onclick="showLoginSection()">← Back to password login</div>
+    </div>
+
+    <div id="error-msg"></div>
+    <div class="msg">Don't have an account? <a href="register.html">Register</a></div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+function showMsg(text, type="error") {
+    const el = document.getElementById("error-msg");
+    el.textContent = text;
+    el.className = type;
+    el.style.display = "block";
+}
+
+function showOtpRequest() {
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("otp-section").style.display = "block";
+    const email = document.getElementById("email").value.trim();
+    if (email) document.getElementById("otp-email").value = email;
+    document.getElementById("error-msg").style.display = "none";
+}
+
+function showLoginSection() {
+    document.getElementById("login-section").style.display = "block";
+    document.getElementById("otp-section").style.display = "none";
+    document.getElementById("otp-verify-part").style.display = "none";
+    document.getElementById("error-msg").style.display = "none";
+}
+
+async function doLogin() {
+    const email    = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    if (!email || !password) { showMsg("Please fill in all fields"); return; }
+    try {
+        const res  = await fetch(`${API}/login`, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({email, password})
+        });
+        const data = await res.json();
+        if (data.success) {
+            _redirectUser(data.user);
+        } else if (data.can_use_otp) {
+            showMsg("Invalid password. You can also login with OTP.");
+            // Auto pre-fill and show OTP section
+            document.getElementById("email").value = email;
+        } else {
+            showMsg(data.message || "Login failed");
+        }
+    } catch (e) {
+        showMsg("Server error. Is the backend running?");
+    }
+}
+
+async function requestOtp() {
+    const email = document.getElementById("otp-email").value.trim();
+    if (!email) { showMsg("Enter your registered email"); return; }
+    const btn = document.getElementById("send-otp-btn");
+    btn.disabled = true; btn.textContent = "Sending...";
+    try {
+        const res  = await fetch(`${API}/send-login-otp`, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({email})
+        });
+        const data = await res.json();
+        if (data.success) {
+            showMsg("OTP sent to your email. Check your inbox.", "success");
+            document.getElementById("otp-verify-part").style.display = "block";
+        } else {
+            showMsg(data.message || "Failed to send OTP");
+        }
+    } catch (e) {
+        showMsg("Server error");
+    } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send OTP';
+    }
+}
+
+async function verifyOtp() {
+    const email = document.getElementById("otp-email").value.trim();
+    const otp   = document.getElementById("otp-code").value.trim();
+    if (!otp) { showMsg("Enter the OTP"); return; }
+    try {
+        const res  = await fetch(`${API}/verify-login-otp`, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify({email, otp})
+        });
+        const data = await res.json();
+        if (data.success) {
+            _redirectUser(data.user);
+        } else {
+            showMsg(data.message || "Invalid OTP");
+        }
+    } catch (e) {
+        showMsg("Server error");
+    }
+}
+
+function _redirectUser(user) {
+    localStorage.setItem("user", JSON.stringify(user));
+    if      (user.role === "admin")  window.location.href = "admin.html";
+    else if (user.role === "mentor") window.location.href = "mentor.html";
+    else                             window.location.href = "mentee.html";
+}
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+        if (document.getElementById("otp-section").style.display !== "none") {
+            if (document.getElementById("otp-verify-part").style.display !== "none") verifyOtp();
+            else requestOtp();
+        } else {
+            doLogin();
+        }
+    }
+});
+</script>
+</body>
+</html>

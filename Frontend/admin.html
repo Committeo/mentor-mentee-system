@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="css/Admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h2><i class="fas fa-shield-alt"></i> Mentor-Mentee System — Admin</h2>
+        <div class="header-controls"><span id="welcome-text" style="color:#1abc9c; font-weight:600;"></span>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search users...">
+                <button class="btn btn-search" onclick="filterTable()"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="content">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</li>
+                    <li data-section="mentor" data-role="mentor"><i class="fas fa-chalkboard-teacher"></i> Mentors</li>
+                    <li data-section="mentee" data-role="mentee"><i class="fas fa-user-graduate"></i> Mentees</li>
+                    <li data-section="assign"><i class="fas fa-link"></i> Assign Pairs</li>
+                    <li data-section="tasks"><i class="fas fa-tasks"></i> Tasks</li>
+                    <li data-section="feedback"><i class="fas fa-comment"></i> Feedback</li>
+                    <li data-section="messenger"><i class="fas fa-comments"></i> Messenger</li>
+                    <li data-section="logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main>
+            <!-- DASHBOARD -->
+            <section id="dashboard-section" class="section active">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                <div class="dashboard-cards">
+                    <div class="card card-blue"><h3>Total Mentors</h3><p id="d-mentors">0</p><i class="fas fa-chalkboard-teacher card-icon"></i></div>
+                    <div class="card card-green"><h3>Total Mentees</h3><p id="d-mentees">0</p><i class="fas fa-user-graduate card-icon"></i></div>
+                    <div class="card card-orange"><h3>Assignments</h3><p id="d-assignments">0</p><i class="fas fa-link card-icon"></i></div>
+                    <div class="card card-purple"><h3>Total Tasks</h3><p id="d-tasks">0</p><i class="fas fa-tasks card-icon"></i></div>
+                    <div class="card card-yellow" style="color:#333;"><h3>Pending Tasks</h3><p id="d-pending">0</p><i class="fas fa-clock card-icon"></i></div>
+                    <div class="card card-red"><h3>Feedbacks</h3><p id="d-feedbacks">0</p><i class="fas fa-comments card-icon"></i></div>
+                </div>
+            </section>
+
+            <!-- USERS TABLE (mentor/mentee) -->
+            <section id="user-section" class="section">
+                <div class="section-header">
+                    <h2 id="user-section-title"><i class="fas fa-users"></i> Users</h2>
+                </div>
+                <div class="table-container">
+                    <table id="employee-table">
+                        <thead>
+                            <tr><th>ID</th><th>Name</th><th>Department</th><th>Role</th><th>Email</th><th>Action</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ASSIGN -->
+            <section id="assign-section" class="section">
+                <h2><i class="fas fa-link"></i> Assign Mentor → Mentee</h2>
+                <div class="assign-box">
+                    <select id="assign-mentor-sel"><option value="">-- Select Mentor --</option></select>
+                    <select id="assign-mentee-sel"><option value="">-- Select Mentee --</option></select>
+                    <button class="btn btn-primary" onclick="doAssign()"><i class="fas fa-link"></i> Assign</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>#</th><th>Mentor</th><th>Mentee</th></tr></thead>
+                        <tbody id="assignments-table"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TASKS -->
+            <section id="tasks-section" class="section">
+                <h2><i class="fas fa-tasks"></i> All Tasks</h2>
+                <div class="assign-box">
+                    <select id="admin-task-mentee"><option value="">-- Select Mentee --</option></select>
+                    <input type="text" id="admin-task-title" placeholder="Task title">
+                    <input type="date" id="admin-task-deadline">
+                    <button class="btn btn-primary" onclick="addAdminTask()"><i class="fas fa-plus"></i> Add Task</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>ID</th><th>Title</th><th>Mentee ID</th><th>Status</th><th>Deadline</th></tr></thead>
+                        <tbody id="admin-tasks-table"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- FEEDBACK -->
+            <section id="feedback-section" class="section">
+                <h2><i class="fas fa-comment"></i> Feedback Control</h2>
+                <div class="assign-box">
+                    <input type="text" id="new-question" placeholder="Enter question">
+                    <select id="question-type">
+                        <option value="text">Text</option>
+                        <option value="dropdown">Dropdown</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="addQuestion()"><i class="fas fa-plus"></i> Add Question</button>
+                    <button class="btn btn-success" onclick="releaseFeedback()"><i class="fas fa-rocket"></i> Release Feedback</button>
+                </div>
+                <div id="question-list"></div>
+                <hr style="margin:1.5rem 0;">
+                <h3>Submitted Answers <span style="font-size:0.8rem;background:#e3f2fd;color:#1565c0;padding:0.2rem 0.6rem;border-radius:20px;font-weight:500;"><i class="fas fa-user-secret"></i> Responses are anonymous</span></h3>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Respondent</th><th>Question</th><th>Answer</th></tr></thead>
+                        <tbody id="answers-table"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- MESSENGER -->
+            <section id="messenger-section" class="section">
+                <h2><i class="fas fa-comments"></i> Messenger</h2>
+                <div class="messenger-container">
+                    <div class="contact-list">
+                        <h3><i class="fas fa-users"></i> All Users</h3>
+                        <div id="contact-list-items"></div>
+                    </div>
+                    <div class="chat-area">
+                        <div id="no-chat-selected" class="no-chat-selected">
+                            <i class="fas fa-comment-dots" style="font-size:3rem; color:#ddd;"></i>
+                            <span>Select a user to message</span>
+                        </div>
+                        <div id="chat-content" style="display:none; flex-direction:column; height:100%;">
+                            <div class="chat-header">
+                                <div class="contact-avatar" id="chat-avatar" style="width:36px;height:36px;font-size:1rem;"></div>
+                                <div>
+                                    <div id="chat-header-name" style="font-weight:600;"></div>
+                                    <div id="chat-header-role" style="font-size:0.8rem; opacity:0.8;"></div>
+                                </div>
+                            </div>
+                            <div class="chat-messages" id="chat-messages"></div>
+                            <div class="chat-input-area">
+                                <input type="text" id="msg-input" placeholder="Type a message...">
+                                <button class="btn-send" onclick="Messenger.sendMessage()">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script src="js/messenger.js"></script>
+<script>
+const API = "http://127.0.0.1:8000";
+let currentUser = JSON.parse(localStorage.getItem("user") || "null");
+if (!currentUser || currentUser.role !== "admin") window.location.href = "login.html";
+
+// Sidebar nav
+document.querySelectorAll(".sidebar ul li").forEach(item => {
+    item.addEventListener("click", () => {
+        document.querySelectorAll(".sidebar ul li").forEach(i => i.classList.remove("active"));
+        document.querySelectorAll("main section").forEach(s => s.classList.remove("active"));
+        item.classList.add("active");
+        const sec = item.getAttribute("data-section");
+        const role = item.getAttribute("data-role");
+        if (sec === "logout") { localStorage.clear(); window.location.href = "login.html"; return; }
+        const target = document.getElementById(sec + "-section");
+        if (target) target.classList.add("active");
+        if (role === "mentor" || role === "mentee") { document.getElementById("user-section").classList.add("active"); loadUsers(role); }
+        if (sec === "assign") loadAssign();
+        if (sec === "tasks") { loadAdminTasks(); loadMenteesForSelect("admin-task-mentee"); }
+        if (sec === "feedback") { loadQuestions(); loadAnswers(); }
+        if (sec === "messenger") Messenger.loadContacts();
+        if (sec === "dashboard") loadDashboard();
+    });
+});
+
+async function loadDashboard() {
+    const res = await fetch(`${API}/admin/dashboard`);
+    const d = await res.json();
+    document.getElementById("d-mentors").textContent = d.total_mentors;
+    document.getElementById("d-mentees").textContent = d.total_mentees;
+    document.getElementById("d-assignments").textContent = d.total_assignments;
+    document.getElementById("d-tasks").textContent = d.total_tasks;
+    document.getElementById("d-pending").textContent = d.pending_tasks;
+    document.getElementById("d-feedbacks").textContent = d.total_feedbacks;
+}
+
+async function loadUsers(role) {
+    const res = await fetch(`${API}/${role}s`);
+    const data = await res.json();
+    document.getElementById("user-section-title").innerHTML = `<i class="fas fa-users"></i> ${role === 'mentor' ? 'Mentors' : 'Mentees'}`;
+    const tbody = document.querySelector("#employee-table tbody");
+    tbody.innerHTML = "";
+    data.forEach(u => {
+        tbody.innerHTML += `<tr>
+            <td>${u.id}</td><td>${u.name}</td><td>${u.dep||""}</td><td>${u.role}</td><td>${u.email}</td>
+            <td><button class="btn btn-danger" onclick="deleteUser(${u.id})"><i class="fas fa-trash"></i></button></td>
+        </tr>`;
+    });
+}
+
+async function deleteUser(id) {
+    if (!confirm("Delete this user?")) return;
+    await fetch(`${API}/admin/user/${id}`, { method: "DELETE" });
+    loadUsers("mentor");
+}
+
+function filterTable() {
+    const q = document.getElementById("search-input").value.toLowerCase();
+    document.querySelectorAll("#employee-table tbody tr").forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? "" : "none";
+    });
+}
+
+async function loadAssign() {
+    await loadMenteesForSelect("assign-mentee-sel");
+    const res = await fetch(`${API}/mentors`);
+    const mentors = await res.json();
+    const sel = document.getElementById("assign-mentor-sel");
+    sel.innerHTML = '<option value="">-- Select Mentor --</option>';
+    mentors.forEach(m => sel.innerHTML += `<option value="${m.id}">${m.name}</option>`);
+    const ares = await fetch(`${API}/admin/assignments`);
+    const assignments = await ares.json();
+    const tbody = document.getElementById("assignments-table");
+    tbody.innerHTML = "";
+    assignments.forEach((a, i) => {
+        tbody.innerHTML += `<tr><td>${i+1}</td><td>${a.mentor.name}</td><td>${a.mentee.name}</td></tr>`;
+    });
+}
+
+async function loadMenteesForSelect(selId) {
+    const res = await fetch(`${API}/mentees`);
+    const mentees = await res.json();
+    const sel = document.getElementById(selId);
+    sel.innerHTML = '<option value="">-- Select Mentee --</option>';
+    mentees.forEach(m => sel.innerHTML += `<option value="${m.id}">${m.name}</option>`);
+}
+
+async function doAssign() {
+    const mentorId = document.getElementById("assign-mentor-sel").value;
+    const menteeId = document.getElementById("assign-mentee-sel").value;
+    if (!mentorId || !menteeId) { alert("Select both mentor and mentee"); return; }
+    const res = await fetch(`${API}/admin/assign`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({mentor_id: parseInt(mentorId), mentee_id: parseInt(menteeId)})
+    });
+    const data = await res.json();
+    alert(data.message);
+    loadAssign();
+}
+
+async function loadAdminTasks() {
+    const res = await fetch(`${API}/admin/tasks`);
+    const data = await res.json();
+    const tbody = document.getElementById("admin-tasks-table");
+    tbody.innerHTML = "";
+    data.forEach(t => {
+        tbody.innerHTML += `<tr>
+            <td>${t.id}</td><td>${t.title}</td><td>${t.mentee_id}</td>
+            <td><span class="status-badge" style="background:${t.status==='completed'?'#d4edda':'#fff3cd'};color:${t.status==='completed'?'#155724':'#856404'}">${t.status}</span></td>
+            <td>${t.deadline ? t.deadline.split(" ")[0] : "-"}</td>
+        </tr>`;
+    });
+}
+
+async function addAdminTask() {
+    const menteeId = document.getElementById("admin-task-mentee").value;
+    const title = document.getElementById("admin-task-title").value.trim();
+    const deadline = document.getElementById("admin-task-deadline").value;
+    if (!menteeId || !title) { alert("Fill in mentee and title"); return; }
+    await fetch(`${API}/admin/task/add`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({mentee_id: parseInt(menteeId), title, deadline: deadline || null})
+    });
+    document.getElementById("admin-task-title").value = "";
+    loadAdminTasks();
+}
+
+async function loadQuestions() {
+    const res = await fetch(`${API}/admin/feedback/questions`);
+    const data = await res.json();
+    const list = document.getElementById("question-list");
+    list.innerHTML = "";
+    data.forEach(q => {
+        list.innerHTML += `<div class="question-item"><b>${q.question}</b> <span style="color:#777;font-size:0.8rem;">(${q.type})</span></div>`;
+    });
+}
+
+async function loadAnswers() {
+    const res = await fetch(`${API}/admin/feedback/answers`);
+    const data = await res.json();
+    const tbody = document.getElementById("answers-table");
+    tbody.innerHTML = "";
+    data.forEach(a => {
+        tbody.innerHTML += `<tr><td>${a.mentee}</td><td>${a.question}</td><td>${a.answer}</td></tr>`;
+    });
+}
+
+async function addQuestion() {
+    const question = document.getElementById("new-question").value.trim();
+    const type = document.getElementById("question-type").value;
+    if (!question) { alert("Enter a question"); return; }
+    await fetch(`${API}/admin/feedback/add-question`, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ question, type })
+    });
+    document.getElementById("new-question").value = "";
+    loadQuestions();
+}
+
+async function releaseFeedback() {
+    await fetch(`${API}/admin/feedback/release`, { method: "POST" });
+    alert("✅ Feedback released to all mentees!");
+}
+
+// Init
+document.getElementById("welcome-text").textContent = "Welcome, " + (currentUser?.name || "Admin");
+loadDashboard();
+Messenger.init(currentUser);
+Profile.init(currentUser);
+</script>
+<script src="js/profile.js"></script>
+</body>
+</html>

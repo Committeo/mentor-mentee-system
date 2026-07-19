@@ -40,6 +40,7 @@ def get_db():
 # ==========================
 # PAGE ROUTES
 # ==========================
+
 @app.get("/", response_class=HTMLResponse)
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -47,6 +48,7 @@ def login_page(request: Request):
 @app.get("/register-page", response_class=HTMLResponse)
 def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
+
 
 # ==========================
 # USER APIs
